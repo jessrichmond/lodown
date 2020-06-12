@@ -158,25 +158,17 @@ function each (collection, func) {
 
 module.exports.each = each;
 
-
-/////////////// NEED //////////////////////////
-//////////////// TO ///////////////////////////
-////////////// FINISH /////////////////////////
-//////////////// THE //////////////////////////
-///////////// FOLLOWING //////////////////////
-///////////////////////////////////////////////
-
-
-/** unique : 
+/** unique : designed to take an array with duplicate values & return a new
+ * array with the duplicates removed
  * 
- * @param {array} array : 
- * @return {array} uniqueArr :
+ * @param {array} array : the original array with duplicates
+ * @return {array} uniqueArr : a new array with duplicates removed / with unique values only
  */ 
  
 function unique (array) {
     let uniqueArr = [];
     for (let i = 0; i < array.length; i++) {
-        if (!uniqueArr.includes(array[i])) {
+        if (indexOf(array, array[i]) !== -1 && !uniqueArr.includes(array[i])) {
             uniqueArr.push(array[i]);
         }
     } return uniqueArr;
@@ -184,38 +176,41 @@ function unique (array) {
 
 module.exports.unique = unique;
 
-/** filter : 
+/** filter : designed to loop through an array and call a function for each of the array's
+ * elements. if the function returns true, that element should be pushed into a new array.
  * 
- * @param {array} array : 
- * @param {function} callback :
- * @return {array} elements :
+ * @param {array} array : the array in which you'll iterate
+ * @param {function} func : the function you will pass to each of the array's elements
+ * @return {array} newArr : an array with elements that returned true after being passed
+ * to the function
  */ 
  
-function filter (array, callback) {
-    let elements = [];
-    for (let i = 0; i < array.length; i++) {
-        if (callback(array[i], i, array) === true) {
-            elements.push(array[i]);
+function filter (array, func) {
+    let newArr = [];
+    each(array, function(e, i, a) {
+        if (func(e, i, a) === true) {
+            newArr.push(e);
         } 
-    }
-    return elements;
+    });
+    return newArr;
 }
 
 module.exports.filter = filter;
 
-/** reject : 
+/** reject : designed to loop through an array and call a function for each of the array's
+ * elements. if the function returns false, that element should be pushed into a new array.
  * 
- * @param {array} array : 
- * @param {function} callback :
- * @return {array} newArr :
+ * @param {array} array : the array in which you'll iterate 
+ * @param {function} func : the function you will pass to each of the array's elements
+ * @return {array} newArr : an array with elements that returned false after being passed
+ * to the function
  */ 
  
-function reject (array, callback) {
-  //create a new array
+function reject (array, func) {
   let newArr = [];
-  filter(array,function(element, i, array){
-    if(callback(element, i, array) === false){
-      newArr.push(element);
+  filter(array, function(e, i, a){
+    if(func(e, i, a) === false){
+        newArr.push(e);
     }
   });
   return newArr;
@@ -223,78 +218,74 @@ function reject (array, callback) {
 
 module.exports.reject = reject;
 
-/** partition : 
+/** partition : designed to loop through an array and call a function for each of the array's 
+ * elements. a master array will be made with two sub arrays: one for elements that returned
+ * true after being passed to the function & one for elements that returned false.
  * 
- * @param {array} array : 
- * @param {function} callback :
- * @return {array} arr :
+ * @param {array} array : the array in which you'll iterate
+ * @param {function} func : the function you will pass to each of the array's elements
+ * @return {array} newArr : a master array with two sub arrays. one will be filled with 
+ * elements that returned true after being passed to the function; the other will be filled
+ * with elements that returned false after being passed to the function.
  */ 
  
-function partition (array, callback) {
-    let arr = [];
-    let truthyArr = [];
-    let falsyArr = [];
-    for (let i = 0; i < array.length; i++) {
-        if (callback(array[i], i, array) == true) {
-            truthyArr.push(array[i]);
-        } else {
-            falsyArr.push(array[i]);
-        }
-    }
-    arr.push(truthyArr);
-    arr.push(falsyArr);
-    return arr;
-    
-}
+function partition (array, func) {
+    let newArr = [];
+    let truthyArr = filter(array, function(e, i, a) {
+        return func(e, i, a) === true;
+    });
+    newArr.push(truthyArr);
+    let falsyArr = reject(array, function(e, i, a){
+        return func(e, i, a) === true;
+    });
+    newArr.push(falsyArr);
+    return newArr;
+};
 
 module.exports.partition = partition;
 
-/** map : 
+/** map : designed to loop over a collection & apply a function to each of the elements.
+ * a new array is returned with each of the returned values from the function's loop.
  * 
- * @param {array or object} collection : 
- * @param {function} callback :
- * @return {array} newArr :
+ * @param {array or object} collection : the collection in which you'll iterate
+ * @param {function} func : the function you will pass to each of the collection's elements
+ * @return {array} newArr : a new array with the return values from the function's loop.
  */
  
-function map (collection, callback) {
-  let newArr = [];
-  if (Array.isArray(collection)) {
-    each(collection, function(element, i, array) {
-      newArr.push(callback(element, i, array));
-    }); 
-    } 
-    else if (typeof collection === 'object') {
-    each(collection, function(value, key, object) {
-      newArr.push(callback(collection[key], key, collection));
+function map (collection, func) {
+    let newArr = [];
+    each(collection, function(value, position, collection){
+        newArr.push(func(value, position, collection));
     });
-  }
-  return newArr;
-}
+    return newArr;
+};
 
 module.exports.map = map;
 
-/** pluck : 
+/** pluck : designed to iterate through an array of objects and push the values of a 
+ * specific property into a new array that is then returned.
  * 
- * @param {array} array : 
- * @param {property} property :
- * @return {array} propArr :
+ * @param {array} array : an array of objects through which you'll iterate
+ * @param {property} property : the property whose values you are interested in storing
+ * @return {array} properties : a new array with values that correspond to the property passed in
  */
  
 function pluck (array, property) {
-  let propArr = [];
-  each(array, function(element, i, array) {
-    propArr.push(element[property]);
-  });
-  return propArr;
-}
+    let newArr = [];
+    map(array, function(e, i, a) {
+        newArr.push(e[property]);
+    });
+    return newArr;
+};
 
 module.exports.pluck = pluck;
 
-/** every : 
+/** every : designed to iterate through a collection & call a function for each element.
+ * returns a boolean dependent on whether or not every element returns as true.
  * 
- * @param {array or object} collection : 
- * @param {function} func :
- * @return {boolean} :
+ * @param {array or object} collection : a collection through which you'll iterate
+ * @param {function} func : the function you will pass to each of the collection's elements
+ * @return {boolean} : after being passed into the function, does every element return as true?
  */
 
 function every (collection, func) {
@@ -317,11 +308,12 @@ function every (collection, func) {
 
 module.exports.every = every;
 
-/** some : 
+/** some : designed to iterate through a collection & call a function for each element.
+ * returns a boolean dependent on whether or not at least one element returns as true.
  * 
- * @param {array or object} collection : 
- * @param {function} func :
- * @return {boolean} :
+ * @param {array or object} collection : a collection through which you'll iterate
+ * @param {function} func : the function you will pass to each of the collection's elements
+ * @return {boolean} : after being passed into the function, does any of the elements return true?
  */
  
 function some (collection, func) {
@@ -344,12 +336,14 @@ function some (collection, func) {
 
 module.exports.some = some;
 
-/** reduce : 
+/** reduce : designed to sum together the elements of a collection. will call a function for
+ * every element of a collection passing the arguments previousResult, element, & index. 
  * 
- * @param {array or object} collection : 
- * @param {function} func :
- * @param {number} seed :
- * @return {number} value :
+ * @param {array} arr : a collection through which you'll iterate
+ * @param {function} func : the function you will pass to each of the collection's elements
+ * @param {number} seed : used as previousResult for first iteration. if seed is not passed in,
+ * the first element of the collection is used.
+ * @return {number} previousResult : the sum of a collection's elements 
  */
  
 function reduce (arr, func, seed) {
@@ -369,10 +363,13 @@ function reduce (arr, func, seed) {
 
 module.exports.reduce = reduce;
 
-/** extend : 
+/** extend : designed to update one object's value with another object's value if they 
+ * share the same key. if a key of the second object is not already in the first object,
+ * it will be added in with its value
  * 
- * @param {} collection :
- * @return {object} updated :
+ * @param {object} collection : the original collection through which you'll iterate
+ * @param {an array of multiple objects} ...otherObjs : the additional objects
+ * @return {object} updated : the original object updated
  */
 
 

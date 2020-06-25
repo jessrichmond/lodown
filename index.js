@@ -2,29 +2,6 @@
 
 // YOU KNOW WHAT TO DO //
 
-/**
- * each: Designed to loop over a collection, Array or Object, and applies the 
- * action Function to each value in the collection.
- * 
- * @param {Array or Object} collection: The collection over which to iterate.
- * @param {Function} action: The Function to be applied to each value in the 
- * collection
- */
-function each(collection, action) {
-    if(Array.isArray(collection)) {
-        for(var i = 0; i < collection.length; i++) {
-            action(collection[i], i, collection);
-        }
-    } else {
-        for (var key in collection) {
-            action(collection[key], key, collection);
-        }
-    }
-}
-module.exports.each = each;
-
-
-
 /** 
  * identity: take a value and return that input value unchanged.
  * 
@@ -42,7 +19,7 @@ module.exports.each = each;
  /** typeOf: take a value and return its datatype
   * 
   * @param {*} value: a single value that can be any datatype
-  * @return {*}: the value's datatype
+  * @return {string}: a string of the value's datatype
   * 
   */
   
@@ -64,8 +41,10 @@ function typeOf (value) {
   * 
   * @param {array} arr: the collection whose first <num> element(s) you are searching for
   * @param {number} num: representing the index of the element you are searching for
-  * @return {(array | string)} : an empty array, the element at the first index of an array,
-  * or the first <number> of elements in an array
+  * @return {(array | string)} : an empty array if <arr> is not an array or <num> is 
+  * negative, the element at the first index of an array if <num> is undefined or if 
+  * <num> is not actually a number, or the first <number> of elements in an array if 
+  * no edge cases are passed in.
   */
  
 function first (arr, num) {
@@ -84,8 +63,10 @@ module.exports.first = first;
  * 
  * @param {array} arr : the collection whose last <num> element(s) you are searching for
  * @param {number} num : representing the index of the element you are searching for
- * @return {(array | string)} : an empty array, the element at the last index of an array,
- * or the last <number> of elements in an array
+ * @return {(array | string)} : an empty array if <arr> is not an array or <num> is 
+ * negative, the element at the last index of an array if <num> is undefined or if 
+ * <num> is not actually a number, or the last <number> of elements in an array if 
+ * no edge cases are passed in.
  * 
  */
  
@@ -108,7 +89,7 @@ module.exports.last = last;
  * 
  * @param {array} arr : the array over which to iterate
  * @param {*} value  : the value you are searcing for within the array
- * @return {*} : the index of the first occurance of a value in an array or -1 
+ * @return {number} : the numerical index of the first occurance of a value in an array or -1 
  */
 
 function indexOf (arr, value) {
@@ -201,7 +182,8 @@ module.exports.filter = filter;
  * elements. if the function returns false, that element should be pushed into a new array.
  * 
  * @param {array} array : the array in which you'll iterate 
- * @param {function} func : the function you will pass to each of the array's elements
+ * @param {function} func : the function you will pass to each of the array's elements, 
+ * their indices, & then the entire array
  * @return {array} newArr : an array with elements that returned false after being passed
  * to the function
  */ 
@@ -223,7 +205,8 @@ module.exports.reject = reject;
  * true after being passed to the function & one for elements that returned false.
  * 
  * @param {array} array : the array in which you'll iterate
- * @param {function} func : the function you will pass to each of the array's elements
+ * @param {function} func : the function you will pass to each of the array's elements, 
+ * their indices, & then the entire array
  * @return {array} newArr : a master array with two sub arrays. one will be filled with 
  * elements that returned true after being passed to the function; the other will be filled
  * with elements that returned false after being passed to the function.
@@ -248,7 +231,8 @@ module.exports.partition = partition;
  * a new array is returned with each of the returned values from the function's loop.
  * 
  * @param {array or object} collection : the collection in which you'll iterate
- * @param {function} func : the function you will pass to each of the collection's elements
+ * @param {function} func : the function you will pass to each of the collection's values, 
+ * their positions, & then the entire collection
  * @return {array} newArr : a new array with the return values from the function's loop.
  */
  
@@ -266,7 +250,7 @@ module.exports.map = map;
  * specific property into a new array that is then returned.
  * 
  * @param {array} array : an array of objects through which you'll iterate
- * @param {property} property : the property whose values you are interested in storing
+ * @param {string} property : the property whose values you are interested in storing
  * @return {array} properties : a new array with values that correspond to the property passed in
  */
  
@@ -286,6 +270,7 @@ module.exports.pluck = pluck;
  * @param {array or object} collection : a collection through which you'll iterate
  * @param {function} func : the function you will pass to each of the collection's elements
  * @return {boolean} : after being passed into the function, does every element return as true?
+ * if no callback function is given, the truthiness of the collection's values will be evaluated.
  */
 
 function every (collection, func) {
@@ -314,6 +299,7 @@ module.exports.every = every;
  * @param {array or object} collection : a collection through which you'll iterate
  * @param {function} func : the function you will pass to each of the collection's elements
  * @return {boolean} : after being passed into the function, does any of the elements return true?
+ * if no callback function is given, the truthiness of the collection's values is evaluated.
  */
  
 function some (collection, func) {
@@ -341,9 +327,10 @@ module.exports.some = some;
  * 
  * @param {array} arr : a collection through which you'll iterate
  * @param {function} func : the function you will pass to each of the collection's elements
- * @param {number} seed : used as previousResult for first iteration. if seed is not passed in,
- * the first element of the collection is used.
- * @return {number} previousResult : the sum of a collection's elements 
+ * @param {*} seed : used as previousResult for first iteration. if seed is not passed in,
+ * the first element of the collection is used. not limited to only being a number. 
+ * @return {*} previousResult : the accumulation of a collection's elements; will match
+ * the seed's datatype.
  */
  
 function reduce (arr, func, seed) {

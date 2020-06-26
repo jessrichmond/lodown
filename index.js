@@ -157,11 +157,13 @@ function unique (array) {
 
 module.exports.unique = unique;
 
-/** filter : designed to loop through an array and call a function for each of the array's
- * elements. if the function returns true, that element should be pushed into a new array.
+/** filter : designed to loop through an array and call a function for each of the array's 
+ * elements, their indices, & finally the entire array.  if the function returns true, that
+ * element should be pushed into a new array.
  * 
  * @param {array} array : the array in which you'll iterate
- * @param {function} func : the function you will pass to each of the array's elements
+ * @param {function} func : the function you will pass to each of the array's elements, 
+ * their indices, & then the entire array
  * @return {array} newArr : an array with elements that returned true after being passed
  * to the function
  */ 
@@ -178,8 +180,9 @@ function filter (array, func) {
 
 module.exports.filter = filter;
 
-/** reject : designed to loop through an array and call a function for each of the array's
- * elements. if the function returns false, that element should be pushed into a new array.
+/** reject : designed to loop through an array and call a function for each of the array's 
+ * elements, their indices, & finally the entire array. if the function returns false, that
+ * element should be pushed into a new array.
  * 
  * @param {array} array : the array in which you'll iterate 
  * @param {function} func : the function you will pass to each of the array's elements, 
@@ -201,8 +204,9 @@ function reject (array, func) {
 module.exports.reject = reject;
 
 /** partition : designed to loop through an array and call a function for each of the array's 
- * elements. a master array will be made with two sub arrays: one for elements that returned
- * true after being passed to the function & one for elements that returned false.
+ * elements, their indices, & finally the entire array. a master array will be made with two
+ * sub arrays: one for elements that returned true after being passed to the function & one for
+ * elements that returned false.
  * 
  * @param {array} array : the array in which you'll iterate
  * @param {function} func : the function you will pass to each of the array's elements, 
